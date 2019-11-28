@@ -1,0 +1,87 @@
+
+LIBRARY ieee;
+USE ieee.std_logic_1164.ALL;
+
+-- Testbench VHDL code for traffic light controller 
+
+ENTITY tb_semaforo IS
+END tb_semaforo;
+
+ARCHITECTURE behavior OF tb_semaforo IS 
+    -- Component Declaration for the traffic light controller 
+    COMPONENT semaforo
+    PORT(
+         sensor : IN  std_logic;
+         clk : IN  std_logic;
+         rst_n : IN  std_logic;
+         light_highway : OUT  std_logic_vector(2 downto 0);
+         light_farm : OUT  std_logic_vector(2 downto 0)
+        );
+    END COMPONENT;
+	 
+   --Inputs 
+   signal sensor : std_logic := '0';
+   signal clk : std_logic := '1';
+   signal rst_n : std_logic := '0';
+   --Outputs
+   signal light_highway : std_logic_vector(2 downto 0);
+   signal light_farm : std_logic_vector(2 downto 0);
+	
+-- Definición del periodo del reloj correspondiente
+-- según el código de Entrega
+
+-- Códigos acabados en            Periodo
+
+--	       0,4,6                    100 ms
+--			 1,5,7                    200 ms
+--			 2,8                      250 ms
+--			 3,9                      500 ms
+			 
+   constant clk_period : time := 250 ms;
+	
+BEGIN
+ -- Instantiate the traffic light controller 
+   sem : semaforo PORT MAP (
+          sensor => sensor,
+          clk => clk,
+          rst_n => rst_n,
+          light_highway => light_highway,
+          light_farm => light_farm
+        );
+
+-- Clock process definitions
+   clk_process :process
+   begin
+   clk <= '1';
+   wait for clk_period/2;
+   clk <= '0';
+   wait for clk_period/2;
+   end process;
+  
+
+stim_proc: process
+  begin    
+  rst_n <= '0';
+  sensor <= '0';
+  wait for 1000 ms;
+  rst_n <= '1';
+  wait for 1950 ms;
+  sensor <= '1';
+  wait for 6000 ms;
+  sensor <= '0';
+  wait for 3000 ms;
+  sensor <= '1';
+  wait for 2000 ms;
+  sensor <= '0';
+  wait for 10000 ms;
+  sensor <= '1';
+  wait for 8000 ms;
+  sensor <= '0';
+  wait for 2050 ms;
+  rst_n <= '0';
+  wait for 1000 ms;
+  rst_n <= '1';
+  wait;
+ end process;
+
+END;
